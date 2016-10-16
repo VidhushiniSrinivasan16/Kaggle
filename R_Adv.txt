@@ -1,0 +1,235 @@
+Reading In Data
+A very common way to store data on a hard drive is in comma separated values format. This format has the file extension .csv. If you open a csv file, it will look something like this:
+
+
+Name,Status,Salary,Pay Basis,Position Title
+"Abdullah, Hasan A.",Detailee,105960,Per Annum,POLICY ADVISOR
+"Abraham, Sabey M.",Employee,55000,Per Annum,ENERGY AND ENVIRONMENT DIRECTOR FOR PRESIDENTIAL PERSONNEL
+The data has rows and columns. The first row of data is Name,Status,Salary,Pay Basis,Position Title. This is called a header row, and it tells you what the data in the rest of the rows means. This row contains multiple columns. Each column is a different datapoint. In this case, the first column of the row is Name, the second column is Status, and so on. One row goes across the data, left to right.
+
+The first column of the data is:
+
+
+Name
+"Abdullah, Hasan A."
+"Abraham, Sabey M."
+One column goes down the data, top to bottom.
+
+When we look at the second row -- "Abdullah, Hasan A.",Detailee,105960,Per Annum,POLICY ADVISOR, we can see that Name is "Abdullah, Hasan A.", Status is Detailee, Salary is 105960, Pay Basis is Per Annum, and Position Title is POLICY ADVISOR.
+
+Each row after the header row contains data on a single White House employee. As you can see, we separate each column within the rows with a , (comma). If you've used Excel before, this layout will look very familiar -- it's how spreadsheets look.
+
+We can read a csv file into R using the read.csv function. This will take a csv file, and split it properly into the right rows and columns.
+
+
+congress <- read.csv("114_congress.csv")
+whiteHouse <- read.csv("2015_white_house.csv")
+
+
+Creating A Matrix
+
+
+In R, we can create matrices with the matrix function. We turn a vector into a matrix by specifying the number of columns and rows we want the final data to have.
+
+For example, the vector c(1,2,3,4,5,6) could be turned into a matrix with 2 rows and 3 columns:
+
+
+1 3 5
+2 4 6
+It can also be turned into a matrix with 3 rows and 2 columns:
+
+
+1 4
+2 5
+3 6
+The number of elements in a matrix is equal to the number of rows times the number of columns. So, if we want to turn a vector into a matrix, the row and column count we want has to match the number of elements in the vector.
+
+We can create a matrix with the matrix function. The function takes 3 inputs, or arguments. The first argument is the vector we want to turn into a matrix. The second argument is the number of rows we want the resulting matrix to have. The third argument is the number of columns we want the resulting matrix to have.
+
+
+# Create a simple matrix with 3 rows and 2 columns.
+B <- matrix(c(1,2,3,4,5,6), 3, 2)
+print(B)
+
+C <-matrix(c("Rambo", "Chuck Norris", "Arnold", "Steven Seagal", "John Wayne", "Steve McQueen"),2,3)
+print(C)
+
+
+Getting A Matrix Element
+
+
+Just like with vectors, it's useful to be able to get values out of a matrix to do computations on. Because a matrix is two-dimensional, we need two numbers to index it and get elements out. The first number is the row that we want to get, and the second number is the column within the row that we want.
+
+We can index a matrix C and get the value in the first column of the first row with C[1,1]. The first number is the row number, followed by a comma, then the column number.
+
+C[2,3] will get the third column of the second row.
+
+# Print the first column of the second row.
+print(C[2,1])
+
+# Print the third column of the second row.
+print(C[2,3])
+
+c22 <- C[2,2]
+c13 <- C[1,3]
+print(c22)
+print(c13)
+
+
+Getting Rows And Columns
+
+
+Sometimes, we want a whole row or a whole column from a matrix, not just a single element (a whole row or column would be a vector). When we want to do this, we can leave off a column or row number.
+
+For example, C[1,] will get the whole first row of the matrix C, and C[,1] will get the whole first column of the matrix.
+
+# The first row of C.
+print(C[1,])
+
+# The first column of C.
+print(C[,1])
+
+c20 <- C[2,]
+c03 <- C[,3]
+
+print(c20)
+print(c03)
+
+
+Data Frames
+
+
+One problem with matrices that makes it hard to represent our White House data as a matrix is the fact that in R, matrix elements have to all have the same data type. Remember how we couldn't make a vector like c(1,"hello",5)? R will automatically convert 1 and 5 in that vector to character types, because we can't mix numeric and character types in one vector.
+
+A matrix is much the same -- all the values in a matrix can only be of one type.
+
+Our white house data looks like this:
+
+
+Name   Status Salary Pay.Basis
+           Abdullah, Hasan A. Detailee 105960 Per Annum
+            Abraham, Sabey M. Employee  55000 Per Annum
+         Abraham, Yohannes A. Employee 121200 Per Annum
+           Abramson, Jerry E. Employee 155035 Per Annum
+Of these, the Name, Status, and Pay.Basis columns are all character types. But the Salary column is a numeric type. We could read Salary in as a character, but if we want to, for example, add up all of the salaries, it won't be possible, because you can't add up character types. This makes sense -- you can't add hello and bye and expect a reasonable result -- addition is a mathematical operation, after all.
+
+We'll need the Salary column to be numeric. Luckily, R has a type called a data frame. Conceptually, a data frame is very similar to a matrix -- it holds two dimensions of data. However, the critical advantage of a data frame is that each column of a data frame can be a different type. A data frame will allow us to make Name, Status, and Pay.Basis into character types, and Salary a numeric type.
+
+When you're working with datasets, a data frame is the most common data type you'll be using.
+
+
+
+Data Frame Columns
+
+
+When you read in a data file using read.csv, it's by default read in as a data frame. This means that our whiteHouse data from earlier is a data frame. read.csv will automatically figure out the right type to assign to each column -- in our case, Salary is numeric already.
+
+Data frames have a few other advantages over matrices. One is that header rows are automatically detected and used as column names. Another is that you can get a column by name instead of using the number.
+
+whiteHouse[1,"Salary"] will get the salary of the first employee in our data.
+
+whiteHouse["Salary"] will get the whole "Salary" column from our data frame.
+
+
+# Get the salary column from the whitehouse data
+salary <- whiteHouse["Salary"]
+
+# Get the salary of the first employee in our data (salary column of the first row)
+firstSalary <- whiteHouse[1,"Salary"]
+
+whiteHouseNames <- whiteHouse["Name"]
+
+status5 <-whiteHouse[5,"Status"]
+
+print(whiteHouseNames)
+print(status5)
+
+
+Finding Average Salary
+
+
+Now that we understand data frames better, we can calculate the average salary of all White House employees. To do this, we just have to find the sum of all the salaries, and divide by the number of employees.
+
+We can use the nrow function to find the number of White House employees. This function will find the number of rows in a matrix or data frame.
+
+We can use the sum function to add all the elements in a numeric vector or matrix.
+
+
+# Enter your code here.
+total <- sum(whiteHouse["Salary"])
+num <- nrow(whiteHouse)
+averageSalary <- total/num
+print(averageSalary)
+
+Finding The Highest/Lowest Salary
+
+
+We can find the highest value in a numeric vector or matrix using the max function. We can find the lowest value using the min function.
+
+
+# Enter your code here.
+highestSalary <- max(whiteHouse["Salary"])
+lowestSalary <- min(whiteHouse["Salary"])
+print(highestSalary)
+print(lowestSalary)
+
+
+
+
+
+Subtle Differences
+
+
+You may have noticed that there are two ways to get a column -- you can use whiteHouse["Salary"], or whiteHouse[,"Salary"]. Both of these will get the column, but they will do it in different ways. It's critical to know exactly what's happening, or you could end up with code that doesn't work properly.
+
+whiteHouse["Salary"] will return a data frame object. It will take just one column of the existing data frame, and create a new data frame with only that column. You could even type whiteHouse["Salary"]["Salary"] (or add ["Salary"] as many times as you want), and keep getting the same data frame, with just one column.
+
+whiteHouse[,"Salary"] will return a vector, with only the data in the Salary column. This is because using matrix indexing on a dataframe (two numbers separated by a comma) will always return a vector.
+
+R has many little things like this to be aware of -- if you want a full explanation of what gets returned with what kind of dataframe indexing, read this.
+
+It's very important to always use the indexing method that returns what you expect.
+
+# Returns a data frame.
+salaryFrame <- whiteHouse["Salary"]
+
+# Returns a vector
+salaryVector <- whiteHouse[,"Salary"]
+
+whiteHouseNames <- whiteHouse["Name"]
+
+whiteHouseNamesVector <- whiteHouse[,"Name"]
+print(class(whiteHouseNames))
+print(class(whiteHouseNamesVector))
+
+o/p
+
+Output
+[1] "data.frame"
+[1] "factor"
+
+
+Minimum/Maximum Index
+
+
+We found the highest and lowest salaries earlier, but what if we wanted to find the names of the people who had those salaries? We'd need to find the row with the maximum and minimum salaries, and then find the value of the Name column.
+
+To do this, we can use the which.min and which.max functions. These functions find the index of the lowest and highest values, respectively, in a vector.
+
+Once we find that index, we can use it to grab the right row from the whiteHouse data frame, and then get the name we want.
+
+# Find the index of the person with the lowest salary.
+# This is where knowing what kind of indexing returns what value comes in handy!  We need a vector.
+minimumIndex <- which.min(whiteHouse[,"Salary"])
+# Extract the row of the lowest salary.
+minimumSalaryRow <- whiteHouse[minimumIndex,]
+# Get the name column from that row.
+lowestEarner <- minimumSalaryRow["Name"]
+# Print the name of the white house employee who earned the least.
+print(lowestEarner)
+
+maximumIndex <- which.max(whiteHouse[,"Salary"])
+maximumSalRow <- whiteHouse[maximumIndex,]
+highestEarner <- maximumSalRow["Name"]
+print(highestEarner)
+
